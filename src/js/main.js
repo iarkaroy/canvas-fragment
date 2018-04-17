@@ -19,32 +19,46 @@ img.onload = function () {
         h = cv.height;
     var s = w / SEGMENTS;
     pieces = [];
+    var totalWidth = w + (SEGMENTS - 1) * GAP;
     for (var i = 0; i < SEGMENTS; ++i) {
         var p = s * i;
         var cx = context();
         cx.canvas.width = s;
         cx.canvas.height = h;
         cx.drawImage(cv, p, 0, s, h, 0, 0, s, h);
+        cx.canvas.dstX = (i * cx.canvas.width + GAP * i) - totalWidth / 2;
+        cx.canvas.dstY = -cx.canvas.height / 2;
+        cx.canvas.currX = cx.canvas.dstX;
+        var ys = [
+            canvas.height / 2,
+            -(canvas.height/2 + cx.canvas.height)
+        ];
+        cx.canvas.currY = ys[Math.floor(Math.random() * ys.length)];
+        cx.canvas.wait = Math.floor(Math.random() * 50);
         pieces.push(cx.canvas);
     }
-    render(w);
+    requestAnimationFrame(render);
 };
 img.src = 'http://localhost:8080/art.jpg';
 
-function render(width) {
-    var totalWidth = width + (SEGMENTS - 1) * GAP;
+function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(canvas.width / 2, canvas.height / 2);
-    //ctx.rotate(DEGREE * Math.PI / 180);
+    ctx.rotate(DEGREE * Math.PI / 180);
     for (var i = 0; i < SEGMENTS; ++i) {
         var p = pieces[i];
-        p.dstX = (i * p.width + GAP * i) - totalWidth / 2;
-        p.dstY = -p.height / 2;
-        ctx.drawImage(p, p.dstX, p.dstY);
-        ctx.strokeRect(p.dstX, p.dstY, p.width, p.height);
+        if(p.wait <= 0) {
+            p.currX += (p.dstX - p.currX) * 0.04;
+            p.currY += (p.dstY - p.currY) * 0.04;
+        } else {
+            p.wait--;
+        }
+        ctx.drawImage(p, p.currX, p.currY);
+        // ctx.strokeRect(p.currX, p.currY, p.width, p.height);
     }
-    console.log(pieces);
     ctx.restore();
+    requestAnimationFrame(render);
 }
 
 function simRender(img) {
