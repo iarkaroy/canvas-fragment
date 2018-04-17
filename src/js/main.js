@@ -63,8 +63,8 @@ function render() {
 
 function simRender(img) {
     var cx = context();
-    var w = img.naturalWidth,
-        h = img.naturalHeight;
+    var w = img.width,
+        h = img.height;
     var deg = DEGREE * -1,
         rad = deg * Math.PI / 180,
         sin = Math.abs(Math.sin(rad)),
