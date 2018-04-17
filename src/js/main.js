@@ -14,29 +14,8 @@ var pieces = [];
 var img = new Image();
 img.crossOrigin = "anonymous";
 img.onload = function () {
-    var cv = simRender(img);
-    var w = cv.width,
-        h = cv.height;
-    var s = w / SEGMENTS;
-    pieces = [];
-    var totalWidth = w + (SEGMENTS - 1) * GAP;
-    for (var i = 0; i < SEGMENTS; ++i) {
-        var p = s * i;
-        var cx = context();
-        cx.canvas.width = s;
-        cx.canvas.height = h;
-        cx.drawImage(cv, p, 0, s, h, 0, 0, s, h);
-        cx.canvas.dstX = (i * cx.canvas.width + GAP * i) - totalWidth / 2;
-        cx.canvas.dstY = -cx.canvas.height / 2;
-        cx.canvas.currX = cx.canvas.dstX;
-        var ys = [
-            canvas.height / 2,
-            -(canvas.height/2 + cx.canvas.height)
-        ];
-        cx.canvas.currY = ys[Math.floor(Math.random() * ys.length)];
-        cx.canvas.wait = Math.floor(Math.random() * 50);
-        pieces.push(cx.canvas);
-    }
+    var cv = initRender(img);
+    initPieces(cv);
     requestAnimationFrame(render);
 };
 img.src = 'http://localhost:8080/art.jpg';
@@ -61,7 +40,32 @@ function render() {
     requestAnimationFrame(render);
 }
 
-function simRender(img) {
+function initPieces(cvs) {
+    var w = cvs.width,
+        h = cvs.height;
+    var s = w / SEGMENTS;
+    pieces = [];
+    var totalWidth = w + (SEGMENTS - 1) * GAP;
+    for (var i = 0; i < SEGMENTS; ++i) {
+        var p = s * i;
+        var cx = context();
+        cx.canvas.width = s;
+        cx.canvas.height = h;
+        cx.drawImage(cvs, p, 0, s, h, 0, 0, s, h);
+        cx.canvas.dstX = (i * cx.canvas.width + GAP * i) - totalWidth / 2;
+        cx.canvas.dstY = -cx.canvas.height / 2;
+        cx.canvas.currX = cx.canvas.dstX;
+        var ys = [
+            canvas.height / 2,
+            -(canvas.height/2 + cx.canvas.height)
+        ];
+        cx.canvas.currY = ys[Math.floor(Math.random() * ys.length)];
+        cx.canvas.wait = Math.floor(Math.random() * 50);
+        pieces.push(cx.canvas);
+    }
+}
+
+function initRender(img) {
     var cx = context();
     var w = img.width,
         h = img.height;
