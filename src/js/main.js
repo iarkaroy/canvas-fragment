@@ -1,7 +1,22 @@
 require('../scss/main.scss');
 
+import Pieces from './pieces';
+
 var document = window.document;
 var canvas = document.getElementById('canvas');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+var myPieces = new Pieces({
+    canvas: '#canvas',
+    text: 'Demo Text',
+    piecesSpacing: 1,
+    angle: 30,
+    rotate: [2]
+});
+myPieces.showPieces();
+
+/*
 var ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -114,3 +129,4 @@ function initRender(img) {
 function context() {
     return document.createElement('canvas').getContext('2d');
 }
+*/
