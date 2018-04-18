@@ -1,22 +1,10 @@
 require('../scss/main.scss');
 
-import Pieces from './pieces';
-
 var document = window.document;
 var canvas = document.getElementById('canvas');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-var myPieces = new Pieces({
-    canvas: '#canvas',
-    text: 'Demo Text',
-    piecesSpacing: 1,
-    angle: 30,
-    rotate: [2]
-});
-myPieces.showPieces();
-
-/*
 var ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -26,16 +14,16 @@ const DEGREE = 45;
 const GAP = 0;
 var pieces = [];
 
-// sliceImage('http://localhost:8080/art.jpg');
-sliceText('Demo Text');
+sliceImage('art.jpg');
+// sliceText('Demo Text');
 
 function sliceImage(src) {
     var img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = function () {
         var cv = initRender(img);
-        initPieces(cv);
-        requestAnimationFrame(render);
+        // initPieces(cv);
+        // requestAnimationFrame(render);
     };
     img.src = src;
 }
@@ -106,7 +94,23 @@ function initPieces(cvs) {
     }
 }
 
-function initRender(img) {
+function initRender(image) {
+    var w = image.width,
+        h = image.height;
+    console.log(w, h);
+    var ctx = context();
+    ctx.canvas.width = w;
+    ctx.canvas.height = h;
+    ctx.save();
+    ctx.rotate(45 * Math.PI / 180)
+    ctx.rect(0, 0, w, 15);
+    ctx.restore();
+    ctx.clip();
+    ctx.drawImage(image, 0, 0);
+    document.body.appendChild(ctx.canvas);
+}
+
+function initRender1(img) {
     var cx = context();
     var w = img.width,
         h = img.height;
@@ -129,4 +133,3 @@ function initRender(img) {
 function context() {
     return document.createElement('canvas').getContext('2d');
 }
-*/
