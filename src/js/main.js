@@ -6,12 +6,12 @@ var ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const SEGMENTS = 40;
-const DEGREE = 30;
-const GAP = 1;
+var SEGMENTS = 20;
+const DEGREE = 45;
+const GAP = 0;
 var pieces = [];
 
-//sliceImage('http://localhost:8080/art.jpg');
+// sliceImage('http://localhost:8080/art.jpg');
 sliceText('Demo Text');
 
 function sliceImage(src) {
@@ -27,7 +27,7 @@ function sliceImage(src) {
 
 function sliceText(text) {
     var cx = context();
-    var font = `bold 80px arial`;
+    var font = `bold 160px arial`;
     var span = document.createElement('span');
     span.textContent = text;
     span.style.font = font;
@@ -40,6 +40,7 @@ function sliceText(text) {
     cx.textBaseline = 'middle';
     cx.textAlign = 'center';
     cx.fillText(text, w / 2, h / 2);
+    SEGMENTS = Math.ceil(w / 20);
     var cv = initRender(cx.canvas);
     initPieces(cv);
     requestAnimationFrame(render);
@@ -58,8 +59,8 @@ function render() {
         } else {
             p.wait--;
         }
-        ctx.drawImage(p, p.currX, p.currY);
-        //ctx.strokeRect(p.currX, p.currY, p.width, p.height);
+        ctx.drawImage(p, p.dstX, p.dstY);
+        //ctx.strokeRect(p.dstX, p.dstY, p.width, p.height);
     }
     ctx.restore();
     requestAnimationFrame(render);
