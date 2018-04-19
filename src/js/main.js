@@ -7,8 +7,8 @@ var ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const SEGMENTS = 10;
-const DEGREE = -45;
+const SEGMENTS = 2;
+const DEGREE = 10;
 const GAP = 0;
 var pieces = [];
 
@@ -51,8 +51,8 @@ function render() {
     for (var i = 0; i < len; ++i) {
         var p = pieces[i];
         if (p.wait <= 0) {
-            p.currX += (p.dstX - p.currX) * 0.04;
-            p.currY += (p.dstY - p.currY) * 0.04;
+            p.currX += (p.dstX - p.currX) * 0.02;
+            p.currY += (p.dstY - p.currY) * 0.02;
         } else {
             p.wait--;
         }
@@ -102,14 +102,13 @@ function initRender(image) {
         ];
         ctx.canvas.currY = ys[Math.floor(Math.random() * ys.length)];
         if (ctx.canvas.currY < 0) {
-            var dg = 90 - Math.atan2(ctx.canvas.dstY - ctx.canvas.currY, 1) * 180 / Math.PI;
-            var d = 1 / dg * DEGREE;
-            ctx.canvas.currX = ctx.canvas.dstX - d;
+            var deg = DEGREE - 90;
+            ctx.canvas.currX = ctx.canvas.dstX * Math.cos(deg * Math.PI / 180) + ctx.canvas.dstY * Math.sin(deg * Math.PI / 180);
         } else {
-            var dg = 90 + Math.atan2(ctx.canvas.dstY - ctx.canvas.currY, 1) * 180 / Math.PI;
-            var d = 1 / dg * DEGREE;
-            ctx.canvas.currX = ctx.canvas.dstX + d;
+            var deg = DEGREE + 90;
+            ctx.canvas.currX = ctx.canvas.dstX * Math.cos(deg * Math.PI / 180) + ctx.canvas.dstY * Math.sin(deg * Math.PI / 180);
         }
+        console.log(ctx.canvas.currY, ctx.canvas.currX);
         ctx.canvas.wait = Math.floor(Math.random() * 50);
         pieces.push(ctx.canvas);
     }
