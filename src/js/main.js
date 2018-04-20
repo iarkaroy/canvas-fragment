@@ -24,7 +24,7 @@ for (var i = 0; i < slices.length; ++i) {
         canvas.height
     ];
     slice.cy = ys[Math.floor(Math.random() * ys.length)];
-    slice.cx = (slice.cy - slice.oy) * Math.cos(angle * Math.PI / 180) / Math.sin(angle * Math.PI / 180);
+    slice.cx = (slice.cy - slice.oy) / Math.tan(angle * Math.PI / 180);
     slice.cx += slice.ox;
     slice.w = Math.floor(Math.random() * 50);
 }
