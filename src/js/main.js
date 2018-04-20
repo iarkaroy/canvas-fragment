@@ -1,119 +1,48 @@
 require('../scss/main.scss');
 
+import Slices from './slices';
+
 var document = window.document;
 var canvas = document.getElementById('canvas');
-
 var ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+const angle = -60;
 
-const SEGMENTS = 2;
-const DEGREE = 10;
-const GAP = 0;
-var pieces = [];
-
-sliceImage('art.jpg');
-// sliceText('Demo Text');
-
-function sliceImage(src) {
-    var img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = function () {
-        initRender(img);
-        requestAnimationFrame(render);
-    };
-    img.src = src;
+var slices = new Slices({
+    text: 'Demo',
+    angle: angle,
+    segments: 20,
+    fontWeight: 'bold'
+}).get();
+for (var i = 0; i < slices.length; ++i) {
+    var slice = slices[i];
+    slice.ox = (canvas.width - slice.width) / 2;
+    slice.oy = (canvas.height - slice.height) / 2;
+    var ys = [
+        -slice.height,
+        canvas.height
+    ];
+    slice.cy = ys[Math.floor(Math.random() * ys.length)];
+    slice.cx = (slice.cy - slice.oy) * Math.cos(angle * Math.PI / 180) / Math.sin(angle * Math.PI / 180);
+    slice.cx += slice.ox;
+    slice.w = Math.floor(Math.random() * 50);
 }
 
-function sliceText(text) {
-    var cx = context();
-    var font = `bold 160px arial`;
-    var span = document.createElement('span');
-    span.textContent = text;
-    span.style.font = font;
-    document.body.appendChild(span);
-    var w = span.offsetWidth,
-        h = span.offsetHeight;
-    document.body.removeChild(span);
-    cx.canvas.width = w;
-    cx.canvas.height = h;
-    cx.font = font;
-    cx.textBaseline = 'middle';
-    cx.textAlign = 'center';
-    cx.fillText(text, w / 2, h / 2);
-    initRender(cx.canvas);
-    requestAnimationFrame(render);
-}
+requestAnimationFrame(render);
 
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    var len = pieces.length;
+    var len = slices.length;
     for (var i = 0; i < len; ++i) {
-        var p = pieces[i];
-        if (p.wait <= 0) {
-            p.currX += (p.dstX - p.currX) * 0.02;
-            p.currY += (p.dstY - p.currY) * 0.02;
+        var slice = slices[i];
+        if (slice.w <= 0) {
+            slice.cx += (slice.ox - slice.cx) * 0.03;
+            slice.cy += (slice.oy - slice.cy) * 0.03;
         } else {
-            p.wait--;
+            slice.w--;
         }
-        ctx.drawImage(p, p.currX, p.currY);
+        ctx.drawImage(slice.canvas, slice.cx, slice.cy);
     }
     requestAnimationFrame(render);
-}
-
-function initRender(image) {
-    var w, h, rad, sin, cos, nw, nh, sh, i;
-
-    // Dimension of image
-    w = image.width;
-    h = image.height;
-
-    // Convert degree to radian
-    rad = DEGREE * Math.PI / 180;
-
-    // Sine and cosine of radian
-    sin = Math.abs(Math.sin(rad));
-    cos = Math.abs(Math.cos(rad));
-
-    // Dimension of rotated image
-    nw = w * cos + h * sin;
-    nh = h * cos + w * sin;
-
-    // Height of per piece
-    sh = nh / SEGMENTS;
-
-    pieces = [];
-    for (i = 0; i < SEGMENTS; ++i) {
-        var ctx = context();
-        ctx.canvas.width = w;
-        ctx.canvas.height = h;
-        ctx.save();
-        ctx.translate(w / 2, h / 2);
-        ctx.rotate(DEGREE * Math.PI / 180);
-        ctx.rect(-nw / 2, sh * i - nh / 2, nw, sh);
-        ctx.restore();
-        ctx.clip();
-        ctx.drawImage(image, 0, 0);
-        ctx.canvas.dstX = (canvas.width - w) / 2;
-        ctx.canvas.dstY = (canvas.height - h) / 2;
-        var ys = [
-            -h,
-            canvas.height
-        ];
-        ctx.canvas.currY = ys[Math.floor(Math.random() * ys.length)];
-        if (ctx.canvas.currY < 0) {
-            var deg = DEGREE - 90;
-            ctx.canvas.currX = ctx.canvas.dstX * Math.cos(deg * Math.PI / 180) + ctx.canvas.dstY * Math.sin(deg * Math.PI / 180);
-        } else {
-            var deg = DEGREE + 90;
-            ctx.canvas.currX = ctx.canvas.dstX * Math.cos(deg * Math.PI / 180) + ctx.canvas.dstY * Math.sin(deg * Math.PI / 180);
-        }
-        console.log(ctx.canvas.currY, ctx.canvas.currX);
-        ctx.canvas.wait = Math.floor(Math.random() * 50);
-        pieces.push(ctx.canvas);
-    }
-}
-
-function context() {
-    return document.createElement('canvas').getContext('2d');
 }
